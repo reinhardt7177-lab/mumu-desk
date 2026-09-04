@@ -8,6 +8,7 @@
 <meta property="og:description" content="수업 준비의 절반은 이미 어딘가에 적혀 있습니다.">
 <meta property="og:image" content="images/20-주안.jpg">
 <title>무무요정 수업도우미</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri/dist/galmuri.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Press+Start+2P&display=swap">
@@ -34,12 +35,13 @@
     --border:    rgba(168, 85, 247, .30);
     --border-hi: rgba(0, 240, 255, .55);
     --radius:    3px;
-    /* 한글은 나눔명조 한 벌로 간다. 어두운 바탕에 명조는 옛 극장 간판 같은
-       결이 있어서, 픽셀 영문과 같이 놓으면 서로를 밀어내지 않는다.
-       라틴 소문자 표식(MUMU CLASS · 번호 · 파일 이름)만 픽셀·모노로 남긴다. */
-    --pixel: 'Nanum Myeongjo','Batang',serif;
-    --mono:  'Press Start 2P',ui-monospace,'Courier New',monospace;
-    --body:  'Nanum Myeongjo','Batang',serif;
+    /* 한글은 Galmuri11 — 무무클래스가 쓰는 그 픽셀 글꼴이다.
+       jsdelivr 에서 오는데, 아티팩트 미리보기는 그 주소를 막는다.
+       그래서 뒤에 나눔명조를 세워 둔다 — 픽셀이 못 오면 명조로 읽힌다.
+       둘 다 어두운 바탕에서 옛 간판 같은 결이라 갈아 끼워도 안 어색하다. */
+    --pixel: 'Galmuri11','Nanum Myeongjo','Batang',serif;
+    --mono:  'Galmuri9','Press Start 2P',ui-monospace,'Courier New',monospace;
+    --body:  'Galmuri11','Nanum Myeongjo','Batang',serif;
   }
 
   * { margin:0; padding:0; box-sizing:border-box }
@@ -48,7 +50,7 @@
   body {
     font-family: var(--body);
     background: var(--bg); color: var(--text);
-    font-size:16.5px; line-height:1.95; letter-spacing:0;
+    font-size:15px; line-height:1.85; letter-spacing:.2px;
     overflow-x:hidden;
   }
 
@@ -83,8 +85,8 @@
     .교시열 { position:static; height:auto; border-right:0; border-bottom:1px solid var(--border) }
   }
   .표찰 {
-    font-family:var(--pixel); font-size:19px; font-weight:800; line-height:1.45;
-    color:var(--text); letter-spacing:-.01em; margin-bottom:9px;
+    font-family:var(--pixel); font-size:17px; font-weight:700; line-height:1.5;
+    color:var(--text); letter-spacing:0; margin-bottom:9px;
   }
   .상표 {
     font-family:'Press Start 2P',var(--mono); font-size:8.5px; letter-spacing:.1em;
@@ -99,7 +101,7 @@
   }
   .차림 a {
     display:grid; grid-template-columns:20px 1fr; gap:8px; align-items:baseline;
-    padding:6px 9px; border-radius:var(--radius); color:var(--text2); font-size:15px;
+    padding:5px 9px; border-radius:var(--radius); color:var(--text2); font-size:13.5px;
     border-left:2px solid transparent;
     transition:color .14s, background .14s, border-color .14s;
   }
@@ -112,7 +114,7 @@
   .옆받기 {
     display:block; margin-top:26px; padding:12px; border-radius:var(--radius);
     background:linear-gradient(135deg, var(--magenta), var(--purple));
-    color:#fff; text-align:center; font-family:var(--pixel); font-weight:700; font-size:14px;
+    color:#fff; text-align:center; font-family:var(--pixel); font-weight:700; font-size:12.5px;
     box-shadow:0 0 22px rgba(255,45,149,.34);
   }
   .옆받기:hover { color:#fff; filter:brightness(1.12) }
@@ -128,7 +130,7 @@
     padding-bottom:11px; margin-bottom:18px; border-bottom:1px solid var(--border);
   }
   .마디 h2 {
-    font-family:var(--pixel); font-size:24px; font-weight:800; letter-spacing:-.01em;
+    font-family:var(--pixel); font-size:21px; font-weight:700; letter-spacing:0;
     color:var(--text); text-wrap:balance;
   }
   .번호 {
@@ -151,13 +153,13 @@
   /* ── 첫 화면 ─────────────────────────────────────── */
   .첫 { padding-top:42px }
   .첫 h1 {
-    font-family:var(--pixel); font-weight:800;
-    font-size:clamp(28px,4.3vw,48px); line-height:1.4; letter-spacing:-.02em;
+    font-family:var(--pixel); font-weight:700;
+    font-size:clamp(25px,3.7vw,40px); line-height:1.5; letter-spacing:0;
     margin-bottom:16px; text-wrap:balance; color:var(--text);
     text-shadow:0 0 26px rgba(168,85,247,.4);
   }
   .첫 h1 em { font-style:normal; color:var(--cyan); text-shadow:0 0 20px rgba(0,240,255,.55) }
-  .풀이 { font-size:18px; max-width:50ch; margin-bottom:26px; line-height:1.9 }
+  .풀이 { font-size:16px; max-width:52ch; margin-bottom:24px; line-height:1.85 }
   .손 { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:8px }
   .큰단추 {
     display:inline-flex; align-items:center; gap:10px;
@@ -193,7 +195,7 @@
     font-style:normal; font-family:'Press Start 2P',var(--mono);
     font-size:9px; color:var(--cyan); padding-top:6px;
   }
-  .까닭 b { display:block; font-family:var(--pixel); font-weight:800; font-size:17px;
+  .까닭 b { display:block; font-family:var(--pixel); font-weight:700; font-size:15px;
     margin-bottom:6px; color:var(--text) }
   .까닭 p { margin:0; font-size:14.5px }
 
@@ -233,7 +235,7 @@
   }
   .묻 summary {
     cursor:pointer; list-style:none; display:flex; gap:10px; align-items:center;
-    font-family:var(--pixel); font-weight:700; font-size:16px; color:var(--text); line-height:1.6;
+    font-family:var(--pixel); font-weight:700; font-size:14px; color:var(--text); line-height:1.7;
   }
   .묻 summary::-webkit-details-marker { display:none }
   .묻 summary::before { content:"▸"; color:var(--cyan); flex:none }
@@ -253,7 +255,7 @@
     font-size:7.5px; letter-spacing:.12em; color:var(--cyan); margin-bottom:9px;
   }
   .이음칸 b {
-    display:block; font-family:var(--pixel); font-weight:800; font-size:17px;
+    display:block; font-family:var(--pixel); font-weight:700; font-size:15px;
     color:var(--text); margin-bottom:7px;
   }
   .이음칸 p { margin:0; font-size:14px }
@@ -300,7 +302,7 @@
   }
   .적을것 li::before { content:"▸"; color:var(--cyan); font-size:11px; line-height:2 }
   .적을것 li > span { min-width:0 }
-  .적을것 b { color:var(--pink); font-weight:800; font-family:var(--pixel) }
+  .적을것 b { color:var(--pink); font-weight:700; font-family:var(--pixel) }
 
   footer {
     margin-top:56px; padding-top:20px; border-top:1px solid var(--border);
