@@ -6,7 +6,8 @@
 <meta name="description" content="초등 담임 바탕화면 위젯. 나이스 시간표와 학교 진도표를 읽어 오늘 챙길 것을 알려 줍니다. 무료.">
 <meta property="og:title" content="무무요정 수업도우미">
 <meta property="og:description" content="수업 준비의 절반은 이미 어딘가에 적혀 있습니다.">
-<meta property="og:image" content="images/20-주안.jpg">
+<meta property="og:url" content="https://desk.mumuclass.kr/">
+<meta property="og:image" content="https://desk.mumuclass.kr/images/20-주안.jpg">
 <title>무무요정 수업도우미</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,13 +23,13 @@
     --bg-card:   rgba(20, 12, 46, .72);
     --bg-nav:    rgba(10, 3, 28, .82);
     --text:      #fdfaff;
-    --text2:     #d9cff4;
-    --muted:     #aa9ed3;
+    --text2:     #e6dfff;
+    --muted:     #c0b5e4;
     --cyan:      #00f0ff;
     --cyan2:     #00ffe7;
     --magenta:   #ff2d95;
     --pink:      #ff6ec7;
-    --purple:    #a855f7;
+    --purple:    #c88fff;
     --green:     #2bff9b;
     --orange:    #ff9446;
     --border:    rgba(168, 85, 247, .30);
@@ -97,15 +98,17 @@
   .차림 { display:grid; gap:0; line-height:1.45 }
   .묶음 {
     font-family:'Press Start 2P',var(--mono); font-size:7.5px; letter-spacing:.14em;
-    color:var(--purple); margin:15px 0 5px; padding-left:2px; line-height:1.6;
+    color:var(--purple); text-shadow:0 0 9px rgba(200,143,255,.45);
+    margin:15px 0 5px; padding-left:2px; line-height:1.6;
   }
   .차림 a {
     display:grid; grid-template-columns:20px 1fr; gap:8px; align-items:baseline;
-    padding:6px 9px; border-radius:var(--radius); color:var(--text2); font-size:14.5px;
+    padding:6px 9px; border-radius:var(--radius); color:#f4efff; font-size:14.5px;
+    font-weight:700;
     border-left:2px solid transparent;
     transition:color .14s, background .14s, border-color .14s;
   }
-  .차림 a i { font-style:normal; font-family:var(--mono); font-size:10px; color:var(--muted) }
+  .차림 a i { font-style:normal; font-family:var(--mono); font-size:10px; color:#b9a9e6 }
   .차림 a:hover {
     color:var(--cyan); background:rgba(0,240,255,.07); border-left-color:var(--cyan);
   }
@@ -222,7 +225,8 @@
     text-align:left; padding:10px 0; border-bottom:1px solid var(--border); vertical-align:baseline;
   }
   .파일표 th {
-    font-family:'Press Start 2P',var(--mono); font-size:7.5px; letter-spacing:.1em; color:var(--purple);
+    font-family:'Press Start 2P',var(--mono); font-size:7.5px; letter-spacing:.1em;
+    color:var(--purple); text-shadow:0 0 8px rgba(200,143,255,.4);
   }
   .파일표 td:first-child { font-family:var(--mono); font-size:11.5px; color:var(--cyan); padding-right:18px }
   .파일표 td:last-child { color:var(--text2) }
@@ -291,7 +295,8 @@
   }
   .적을것머리 {
     display:block; font-family:'Press Start 2P',var(--mono);
-    font-size:7.5px; letter-spacing:.12em; color:var(--purple); margin-bottom:12px;
+    font-size:7.5px; letter-spacing:.12em; color:var(--purple);
+    text-shadow:0 0 8px rgba(200,143,255,.4); margin-bottom:12px;
   }
   .적을것 ul { list-style:none; display:grid; gap:9px }
   /* 칸이 둘인데 자식이 셋이면 셋째가 8px 짜리 첫 칸으로 떨어져 글자가
