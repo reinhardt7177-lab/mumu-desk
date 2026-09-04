@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="초등 담임 바탕화면 위젯. 나이스 시간표와 학교 진도표를 읽어 오늘 챙길 것을 알려 줍니다. 무료.">
+<meta property="og:title" content="무무요정 수업도우미">
+<meta property="og:description" content="수업 준비의 절반은 이미 어딘가에 적혀 있습니다.">
+<meta property="og:image" content="images/20-주안.jpg">
+<title>무무요정 수업도우미</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri/dist/galmuri.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Do+Hyeon&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+
+<style>
+  /* ── 무무클래스 토큰 (mumuclass/src/index.css 그대로) ─────
+     레트로 신스웨이브. 어두운 바탕에 네온 하나.
+     한 벌로 정한 세계라서 밝은 테마를 따로 두지 않는다 —
+     대신 바탕과 모든 색을 빠짐없이 직접 칠한다. */
+  :root {
+    --bg:        #0d0221;
+    --bg-card:   rgba(20, 12, 46, .72);
+    --bg-nav:    rgba(10, 3, 28, .82);
+    --text:      #f0e9ff;
+    --text2:     #b8a9e0;
+    --muted:     #8b7db8;
+    --cyan:      #00f0ff;
+    --cyan2:     #00ffe7;
+    --magenta:   #ff2d95;
+    --pink:      #ff6ec7;
+    --purple:    #a855f7;
+    --green:     #2bff9b;
+    --orange:    #ff9446;
+    --border:    rgba(168, 85, 247, .30);
+    --border-hi: rgba(0, 240, 255, .55);
+    --radius:    3px;
+    --pixel: 'Galmuri11','Press Start 2P','Do Hyeon',monospace;
+    --mono:  'Galmuri9','Galmuri11',ui-monospace,'Courier New',monospace;
+    --body:  'Galmuri11','Pretendard Variable','Noto Sans KR',-apple-system,sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box }
+
+  html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased }
+  body {
+    font-family: var(--body);
+    background: var(--bg); color: var(--text);
+    font-size:15.5px; line-height:1.8; letter-spacing:.2px;
+    overflow-x:hidden;
+  }
+
+  /* 지평선 격자 — 신스웨이브의 그 격자. 아래쪽에만 얕게 깔린다. */
+  .바닥격자 {
+    position:fixed; inset:auto 0 0 0; height:46vh; z-index:0; pointer-events:none;
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(13,2,33,.86) 68%, var(--bg) 100%),
+      repeating-linear-gradient(90deg, rgba(168,85,247,.16) 0 1px, transparent 1px 62px),
+      repeating-linear-gradient(0deg,  rgba(0,240,255,.10) 0 1px, transparent 1px 46px);
+    mask-image:linear-gradient(180deg, transparent, #000 55%);
+    -webkit-mask-image:linear-gradient(180deg, transparent, #000 55%);
+  }
+  .틀, .교시열 { position:relative; z-index:1 }
+
+  a { color:var(--cyan); text-decoration:none }
+  a:hover { color:var(--cyan2) }
+  :where(a,button,summary):focus-visible { outline:3px solid var(--cyan); outline-offset:3px }
+  img { max-width:100% }
+
+  .틀 { display:grid; grid-template-columns:242px minmax(0,1fr); max-width:1200px; margin:0 auto }
+  @media (max-width:920px) { .틀 { grid-template-columns:minmax(0,1fr) } }
+
+  /* ── 교시 열 ─────────────────────────────────────── */
+  .교시열 {
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:28px 18px 28px 24px;
+    border-right:1px solid var(--border);
+    background:var(--bg-nav);
+  }
+  @media (max-width:920px) {
+    .교시열 { position:static; height:auto; border-right:0; border-bottom:1px solid var(--border) }
+  }
+  .표찰 {
+    font-family:var(--pixel); font-size:17px; line-height:1.42; color:var(--text);
+    letter-spacing:0; margin-bottom:9px;
+  }
+  .상표 {
+    font-family:'Press Start 2P',var(--mono); font-size:8.5px; letter-spacing:.1em;
+    color:var(--cyan); text-shadow:0 0 10px rgba(0,240,255,.55); display:block; margin-bottom:14px;
+  }
+  /* 본문 줄 간격(1.8)을 그대로 물려받아 항목이 손가락 두 마디씩 벌어져 있었다.
+     차림표는 읽는 글이 아니라 짚는 목록이라 촘촘해야 한 눈에 든다. */
+  .차림 { display:grid; gap:0; line-height:1.45 }
+  .묶음 {
+    font-family:'Press Start 2P',var(--mono); font-size:7.5px; letter-spacing:.14em;
+    color:var(--purple); margin:15px 0 5px; padding-left:2px; line-height:1.6;
+  }
+  .차림 a {
+    display:grid; grid-template-columns:20px 1fr; gap:8px; align-items:baseline;
+    padding:5px 9px; border-radius:var(--radius); color:var(--text2); font-size:13.5px;
+    border-left:2px solid transparent;
+    transition:color .14s, background .14s, border-color .14s;
+  }
+  .차림 a i { font-style:normal; font-family:var(--mono); font-size:10px; color:var(--muted) }
+  .차림 a:hover {
+    color:var(--cyan); background:rgba(0,240,255,.07); border-left-color:var(--cyan);
+  }
+  .차림 a:hover i { color:var(--cyan) }
+
+  .옆받기 {
+    display:block; margin-top:26px; padding:12px; border-radius:var(--radius);
+    background:linear-gradient(135deg, var(--magenta), var(--purple));
+    color:#fff; text-align:center; font-family:var(--pixel); font-size:12.5px;
+    box-shadow:0 0 22px rgba(255,45,149,.34);
+  }
+  .옆받기:hover { color:#fff; filter:brightness(1.12) }
+  .옆판 { margin-top:8px; font-family:var(--mono); font-size:10px; color:var(--muted); text-align:center }
+
+  /* ── 본문 ────────────────────────────────────────── */
+  main { padding:0 38px 90px; min-width:0 }
+  @media (max-width:920px) { main { padding:0 20px 64px } }
+
+  section { padding-top:52px; scroll-margin-top:20px }
+  .마디 {
+    display:flex; align-items:center; gap:12px;
+    padding-bottom:11px; margin-bottom:18px; border-bottom:1px solid var(--border);
+  }
+  .마디 h2 {
+    font-family:var(--pixel); font-size:21px; font-weight:400; letter-spacing:0;
+    color:var(--text); text-wrap:balance;
+  }
+  .번호 {
+    font-family:'Press Start 2P',var(--mono); font-size:9px; color:var(--bg);
+    background:var(--cyan); padding:5px 7px; border-radius:var(--radius); flex:none;
+    box-shadow:0 0 14px rgba(0,240,255,.45);
+  }
+
+  p { margin:0 0 14px; max-width:66ch; color:var(--text2) }
+  p:last-child { margin-bottom:0 }
+  b, strong { color:var(--text); font-weight:700 }
+
+  .언제 {
+    display:inline-block; margin-bottom:15px; padding:5px 12px;
+    border:1px solid var(--border); border-radius:var(--radius);
+    background:rgba(168,85,247,.10);
+    font-family:var(--mono); font-size:12px; color:var(--pink);
+  }
+
+  /* ── 첫 화면 ─────────────────────────────────────── */
+  .첫 { padding-top:42px }
+  .첫 h1 {
+    font-family:var(--pixel); font-weight:400;
+    font-size:clamp(26px,3.9vw,42px); line-height:1.45; letter-spacing:0;
+    margin-bottom:16px; text-wrap:balance; color:var(--text);
+    text-shadow:0 0 26px rgba(168,85,247,.4);
+  }
+  .첫 h1 em { font-style:normal; color:var(--cyan); text-shadow:0 0 20px rgba(0,240,255,.55) }
+  .풀이 { font-size:16.5px; max-width:52ch; margin-bottom:24px; line-height:1.75 }
+  .손 { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:8px }
+  .큰단추 {
+    display:inline-flex; align-items:center; gap:10px;
+    padding:14px 26px; border-radius:var(--radius);
+    background:linear-gradient(135deg, var(--magenta), var(--purple));
+    color:#fff; font-family:var(--pixel); font-size:14px;
+    box-shadow:0 0 26px rgba(255,45,149,.36);
+  }
+  .큰단추:hover { color:#fff; filter:brightness(1.12) }
+  .큰단추 span { font-family:var(--mono); font-size:11px; opacity:.8 }
+  .곁 { font-size:12.5px; color:var(--muted) }
+
+  /* 화면 그림 — 밝은 앱이라 어두운 바탕에서 뜬다. 네온 테두리로 앉힌다. */
+  .샷 { margin:20px 0 0 }
+  .틀칸 {
+    padding:7px; border-radius:var(--radius);
+    background:linear-gradient(135deg, rgba(0,240,255,.30), rgba(255,45,149,.26));
+    box-shadow:0 0 34px rgba(168,85,247,.24);
+  }
+  .틀칸 img { display:block; width:100%; border-radius:2px }
+  figcaption { margin-top:10px; font-size:12px; color:var(--muted) }
+  .요정칸 { max-width:330px }
+  .요정칸 .틀칸 { background:none; box-shadow:none; padding:0 }
+
+  /* ── 왜 쓰나 ─────────────────────────────────────── */
+  .까닭 { display:grid; gap:10px }
+  .까닭 > div {
+    display:grid; grid-template-columns:30px minmax(0,1fr); gap:14px;
+    padding:15px 16px; border-radius:var(--radius);
+    background:var(--bg-card); border:1px solid var(--border);
+  }
+  .까닭 em {
+    font-style:normal; font-family:'Press Start 2P',var(--mono);
+    font-size:9px; color:var(--cyan); padding-top:6px;
+  }
+  .까닭 b { display:block; font-family:var(--pixel); font-size:15.5px; margin-bottom:6px; color:var(--text) }
+  .까닭 p { margin:0; font-size:14.5px }
+
+  /* ── 지켜지는 것 ─────────────────────────────────── */
+  .약속 { display:grid; gap:10px }
+  .약속 > div {
+    display:grid; grid-template-columns:22px minmax(0,1fr); gap:13px;
+    padding:14px 16px; border-radius:var(--radius);
+    background:rgba(43,255,155,.06); border:1px solid rgba(43,255,155,.24);
+  }
+  .약속 svg { width:18px; height:18px; color:var(--green); margin-top:4px }
+  .약속 p { margin:0; font-size:14.5px }
+  .약속 b { color:var(--green) }
+
+  /* ── 받기 ────────────────────────────────────────── */
+  .받기판 {
+    padding:24px 26px; border-radius:var(--radius);
+    background:var(--bg-card); border:1px solid var(--border-hi);
+    box-shadow:0 0 30px rgba(0,240,255,.12);
+  }
+  .받기판 .큰단추 { margin-bottom:16px }
+  .파일표 { width:100%; border-collapse:collapse; font-size:14px; margin-top:4px }
+  .파일표 th, .파일표 td {
+    text-align:left; padding:10px 0; border-bottom:1px solid var(--border); vertical-align:baseline;
+  }
+  .파일표 th {
+    font-family:'Press Start 2P',var(--mono); font-size:7.5px; letter-spacing:.1em; color:var(--purple);
+  }
+  .파일표 td:first-child { font-family:var(--mono); font-size:11.5px; color:var(--cyan); padding-right:18px }
+  .파일표 td:last-child { color:var(--text2) }
+  .표싸개 { overflow-x:auto }
+
+  /* ── 자주 묻는 것 ────────────────────────────────── */
+  .묻 {
+    border:1px solid var(--border); border-radius:var(--radius);
+    background:var(--bg-card); padding:13px 16px; margin-bottom:8px;
+  }
+  .묻 summary {
+    cursor:pointer; list-style:none; display:flex; gap:10px; align-items:center;
+    font-family:var(--pixel); font-size:14.5px; color:var(--text); line-height:1.6;
+  }
+  .묻 summary::-webkit-details-marker { display:none }
+  .묻 summary::before { content:"▸"; color:var(--cyan); flex:none }
+  .묻[open] summary::before { content:"▾" }
+  .묻 p { margin:10px 0 0 20px; font-size:14.5px }
+
+  /* ── 무무키오스크 연계 ───────────────────────────── */
+  .이음 { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(270px,1fr)) }
+  .이음칸 {
+    padding:18px 20px; border-radius:var(--radius);
+    background:var(--bg-card);
+    border:1px solid rgba(0,240,255,.28);
+    box-shadow:0 0 24px rgba(0,240,255,.10);
+  }
+  .이음머리 {
+    display:block; font-family:'Press Start 2P',var(--mono);
+    font-size:7.5px; letter-spacing:.12em; color:var(--cyan); margin-bottom:9px;
+  }
+  .이음칸 b {
+    display:block; font-family:var(--pixel); font-size:15.5px;
+    color:var(--text); margin-bottom:7px;
+  }
+  .이음칸 p { margin:0; font-size:14px }
+
+  /* ── 건의함 ──────────────────────────────────────── */
+  .건의판 {
+    padding:24px 26px; border-radius:var(--radius);
+    background:var(--bg-card); border:1px solid rgba(255,45,149,.34);
+    box-shadow:0 0 30px rgba(255,45,149,.12);
+  }
+  .적을것 {
+    margin-top:20px; padding-top:18px; border-top:1px solid var(--border);
+  }
+  .적을것머리 {
+    display:block; font-family:'Press Start 2P',var(--mono);
+    font-size:7.5px; letter-spacing:.12em; color:var(--purple); margin-bottom:12px;
+  }
+  .적을것 ul { list-style:none; display:grid; gap:9px }
+  .적을것 li {
+    display:grid; grid-template-columns:8px minmax(0,1fr); gap:11px;
+    font-size:14.5px; color:var(--text2);
+  }
+  .적을것 li::before { content:"▸"; color:var(--cyan); font-size:11px; line-height:1.9 }
+  .적을것 b { color:var(--pink); font-weight:400; font-family:var(--pixel) }
+
+  footer {
+    margin-top:56px; padding-top:20px; border-top:1px solid var(--border);
+    display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between;
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+  }
+
+  @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important } }
+</style>
+
+</head>
+<body>
+<div class="바닥격자" aria-hidden="true"></div>
+
+<div class="틀">
+  <nav class="교시열">
+    <span class="상표">MUMU CLASS</span>
+    <div class="표찰">무무요정<br>수업도우미</div>
+
+    <div class="차림">
+      <a href="#무엇"><i>—</i><span>무엇인가</span></a>
+      <a href="#까닭"><i>—</i><span>왜 쓰나</span></a>
+
+      <div class="묶음">EVERYDAY</div>
+      <a href="#주안"><i>01</i><span>주간학습안내</span></a>
+      <a href="#달력"><i>02</i><span>달력</span></a>
+      <a href="#오늘"><i>03</i><span>오늘 한눈에</span></a>
+
+      <div class="묶음">CLASSROOM</div>
+      <a href="#터치패드"><i>04</i><span>터치패드</span></a>
+      <a href="#역할"><i>05</i><span>1인1역</span></a>
+      <a href="#신호등"><i>06</i><span>소음 신호등</span></a>
+      <a href="#안내판"><i>07</i><span>안내판</span></a>
+      <a href="#모둠"><i>08</i><span>타이머 · 뽑기 · 모둠</span></a>
+
+      <div class="묶음">OUR CLASS</div>
+      <a href="#상담"><i>09</i><span>상담 일지</span></a>
+
+      <div class="묶음">MUMU CLASS</div>
+      <a href="#키오스크"><i>↗</i><span>무무키오스크</span></a>
+
+      <div class="묶음">MORE</div>
+      <a href="#약속"><i>—</i><span>지켜지는 것</span></a>
+      <a href="#받기"><i>—</i><span>받기</span></a>
+      <a href="#묻"><i>—</i><span>자주 묻는 것</span></a>
+      <a href="#건의"><i>—</i><span>건의함</span></a>
+    </div>
+
+    <a class="옆받기" href="https://github.com/reinhardt7177-lab/mumu-suup-doumi-release/releases/latest">내려받기</a>
+    <div class="옆판">WIN 10 · 11 · 81MB · v0.4.0</div>
+  </nav>
+
+  <main>
+    <section class="첫" id="무엇">
+      <h1>수업 준비의 절반은<br><em>이미 어딘가에 적혀 있습니다</em></h1>
+      <p class="풀이">
+        시간표는 나이스에, 차시와 학습주제는 학년 교육과정 문서에 있습니다.
+        무무요정은 그것을 찾아다 오늘 자리에 놓아 줍니다. 지어내는 것은 없습니다.
+      </p>
+      <div class="손">
+        <a class="큰단추" href="https://github.com/reinhardt7177-lab/mumu-suup-doumi-release/releases/latest">내려받기 <span>81MB</span></a>
+        <span class="곁">윈도우 10 · 11 · 무료 · 설치하면 바로</span>
+      </div>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/20-주안.jpg" alt="주간학습안내 화면 — 월요일부터 금요일까지 교시별로 과목과 차시, 학습주제가 채워져 있다" loading="lazy"></div>
+        <figcaption>이번 주 주간학습안내. 시간표와 진도표를 맞춰 한 주치를 미리 그려 놓습니다.</figcaption>
+      </figure>
+    </section>
+
+    <section id="까닭">
+      <div class="마디"><span class="번호">WHY</span><h2>왜 쓰나</h2></div>
+      <div class="까닭">
+        <div><em>01</em><div><b>이미 있는 것을 두 번 적지 않습니다</b>
+          <p>시간표·급식·학사일정은 나이스에서, 차시와 학습주제는 학년 교육과정 운영 계획
+             PDF에서 그대로 가져옵니다. 손으로 옮겨 적을 일이 없습니다.</p></div></div>
+        <div><em>02</em><div><b>지어내지 않습니다</b>
+          <p>학교 문서와 나이스에서 온 것만 보여 줍니다. 그럴듯한 문장을 만들어 내는 기능은
+             아예 들어 있지 않습니다. 틀리면 원본이 틀린 것입니다.</p></div></div>
+        <div><em>03</em><div><b>업무를 가리지 않습니다</b>
+          <p>바탕화면 층에 박아 두면 한글이나 인터넷 창 뒤로 들어갑니다.
+             그 위에 폴더와 아이콘을 그대로 올려놓을 수 있습니다.</p></div></div>
+      </div>
+    </section>
+
+    
+    <section id="주안">
+      <div class="마디"><span class="번호">01</span><h2>주간학습안내</h2></div>
+      <p class="언제">주초에 한 번, 한 주를 그릴 때</p>
+      <p>시간표를 읽어 한 주를 차례로 걸으면서 과목마다 차시를 하나씩 밉니다.
+         월요일 국어가 1차시면 수요일 국어는 3차시로 — 그게 「오늘 다섯 교시」와
+         「이번 주 계획」의 차이입니다.</p>
+         <p>칸을 누르면 그 자리에서 <b>차시·학습내용·비고</b>를 고칩니다. 차시를 바꾸면
+         진도 커서까지 함께 움직여서, 오늘의 수업과 진도 현황에 그대로 나타납니다.
+         주안만 따로 노는 종이가 되지 않습니다.</p>
+         <p>지난 날은 실제로 한 기록을, 앞날은 밀어 본 계획을 보여 줍니다.</p>
+      
+    </section>
+
+    
+    <section id="달력">
+      <div class="마디"><span class="번호">02</span><h2>달력</h2></div>
+      <p class="언제">켜 놓고 하루 종일</p>
+      <p>학사일정 · 방학 D-day · 날씨와 미세먼지 · 급식 · 할 일 · 메모를 한 화면에 둡니다.
+         <b>바탕화면 층에 박으면</b> 벽지와 아이콘 사이에 들어가서 아무 창도 가리지 않습니다.</p>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/21-달력.jpg" alt="달력 화면" loading="lazy"></div>
+        <figcaption>날짜를 누르면 그 날 일정과 할 일이 크게 펼쳐집니다.</figcaption>
+      </figure>
+    </section>
+
+    
+    <section id="오늘">
+      <div class="마디"><span class="번호">03</span><h2>오늘 한눈에</h2></div>
+      <p class="언제">아침에 한 번</p>
+      <p>요정을 누르면 오늘 것을 모아서 폅니다 — 시간표, 급식, 날씨와 미세먼지,
+         그리고 오늘 챙길 것. 교시 시작 2분 전에는 다음 시간 과목과 준비물을 미리 알려 줍니다.</p>
+      <div class="요정칸"><figure class="샷">
+        <div class="틀칸"><img src="images/22-요정오늘.png" alt="바탕화면의 무무요정과 오늘 한눈에 판" loading="lazy"></div>
+        <figcaption>캐릭터는 여덟 가지 중에 고릅니다.</figcaption>
+      </figure></div>
+    </section>
+
+    
+    <section id="터치패드">
+      <div class="마디"><span class="번호">04</span><h2>터치패드</h2></div>
+      <p class="언제">아침 독서 · 과제 확인 · 활동 마무리</p>
+      <p>전자칠판에 띄워 놓으면 다 한 아이가 나와서 자기 번호를 누릅니다.
+         명렬표를 들고 한 명씩 부르던 일을 아이들이 스스로 합니다.</p>
+         <p><b>시간 재기</b>로 놓으면 누른 사람마다 거기서부터 정해진 시간이 갑니다.
+         반 전체가 같이 재는 것이 아니라, 늦게 시작한 아이도 제 몫의 10분을 온전히 갖습니다.</p>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/01-터치패드.jpg" alt="터치패드 화면" loading="lazy"></div>
+        <figcaption>화면 가득으로 켜면 아래 삼분의 이가 통째로 누르는 자리가 됩니다.</figcaption>
+      </figure>
+    </section>
+
+    
+    <section id="역할">
+      <div class="마디"><span class="번호">05</span><h2>1인1역</h2></div>
+      <p class="언제">학기 초, 그리고 달마다 한 번</p>
+      <p>역할을 직접 만들고 무작위로 나누거나 다음 역할로 밉니다.
+         무작위는 <b>지난번과 같은 역할을 피해서</b> 나눕니다 — 그냥 섞으면 꼭 누군가
+         같은 역할을 또 받고, 아이들은 그걸 바로 알아챕니다.</p>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/02-1인1역.jpg" alt="1인1역 화면" loading="lazy"></div>
+        
+      </figure>
+    </section>
+
+    
+    <section id="신호등">
+      <div class="마디"><span class="번호">06</span><h2>소음 신호등</h2></div>
+      <p class="언제">모둠 활동 · 자습 시간</p>
+      <p>교실이 얼마나 시끄러운지 색으로 보여 줍니다. 교실마다 시끄러운 정도가 다르니
+         기준도, 아이들에게 보일 말도 반에 맞게 바꿉니다.</p>
+         <p><b>소리 크기만 잽니다.</b> 녹음하지 않고, 무슨 말인지 알아듣지 않고,
+         화면을 떠나면 마이크를 놓습니다.</p>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/07-신호등.jpg" alt="소음 신호등 화면" loading="lazy"></div>
+        
+      </figure>
+    </section>
+
+    
+    <section id="안내판">
+      <div class="마디"><span class="번호">07</span><h2>안내판</h2></div>
+      <p class="언제">전달 사항이 있을 때</p>
+      <p>적으면 칠판에 크게 뜹니다. 글자 수에 따라 크기가 알아서 맞춰지고,
+         화면 가득으로 켜면 뒷자리에서도 읽힙니다.</p>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/08-안내판.jpg" alt="안내판 화면" loading="lazy"></div>
+        
+      </figure>
+    </section>
+
+    
+    <section id="모둠">
+      <div class="마디"><span class="번호">08</span><h2>타이머 · 뽑기 · 모둠 · 점수판</h2></div>
+      <p class="언제">수업 중 아무 때나</p>
+      <p>타이머는 남은 시간이 고리로 줄어들어 교실 뒤에서도 읽힙니다.
+         뽑기는 한 번 뽑힌 사람을 뒤로 미뤄 골고루 돌아가게 하고, 모둠은 누를 때마다
+         새로 섞습니다. 모둠 점수는 앱을 껐다 켜도 남습니다.</p>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/06-점수판.jpg" alt="모둠 점수판 화면" loading="lazy"></div>
+        
+      </figure>
+    </section>
+
+    
+    <section id="상담">
+      <div class="마디"><span class="번호">09</span><h2>상담 일지</h2></div>
+      <p class="언제">상담하고 난 직후</p>
+      <p>아이 번호를 누르면 그 아이 기록만 학기별로 모여 나옵니다.
+         그 자리에서 한 줄 적고, 생기부 쓸 때 <b>글로 복사</b>해서 그대로 붙입니다.</p>
+         <p>학생 이름은 <b>안 넣어도 됩니다.</b> 비워 두면 번호로 돕니다 —
+         뽑기도 모둠도 1인1역도 번호만으로 돌아갑니다.</p>
+      <figure class="샷">
+        <div class="틀칸"><img src="images/11-우리반.jpg" alt="우리 반 명렬 화면" loading="lazy"></div>
+        
+      </figure>
+    </section>
+
+    <section id="키오스크">
+      <div class="마디"><span class="번호">LINK</span><h2>무무키오스크와 이어집니다</h2></div>
+      <p class="언제">수업 중에 학습앱을 바로 열 때</p>
+      <p>혼자 크는 도구가 아닙니다. 무무클래스가 만들어 온 학습앱들과 한 몸으로 움직입니다.</p>
+
+      <div class="이음">
+        <div class="이음칸">
+          <span class="이음머리">부채꼴 1번 칸</span>
+          <b>무무키오스크로 바로</b>
+          <p>요정을 누르면 펼쳐지는 부채꼴의 첫 칸이 <a href="https://무무.life">무무.life</a> 입니다.
+            아이들이 여는 학습앱 모음이라 수업 중에 가장 자주 눌리는 자리를 줬습니다.
+            이 칸만은 바꿀 수 없습니다.</p>
+        </div>
+        <div class="이음칸">
+          <span class="이음머리">학습자료</span>
+          <b>차시마다 걸린 앱</b>
+          <p>학년 → 과목 → 단원 → 차시로 파고들면, <b>그 차시에 맞는 학습앱</b>이 함께 나옵니다.
+            누르면 바로 열립니다. 4학년 1학기에만 마흔넷이 걸려 있습니다.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:16px">
+        진도표가 없는 학년도 <b>앱은 나옵니다.</b> 교육과정 PDF를 아직 안 넣었어도
+        학년만 고르면 그 학년에 걸린 학습앱을 바로 쓸 수 있습니다.
+      </p>
+    </section>
+
+    <section id="약속">
+      <div class="마디"><span class="번호">SAFE</span><h2>지켜지는 것</h2></div>
+      <div class="약속">
+        <div><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <path d="M10 2.5 3.5 5v5c0 3.6 2.7 6.5 6.5 7.5 3.8-1 6.5-3.9 6.5-7.5V5z"/>
+             <path d="m7.3 9.8 2 2 3.4-3.6"/></svg>
+          <p><b>적은 것은 그 컴퓨터에만 남습니다.</b> 학생 이름도 상담 기록도 어디로도
+             보내지 않습니다. 서버가 없습니다.</p></div>
+        <div><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <rect x="3.5" y="4.5" width="13" height="9" rx="1.5"/><path d="M6.5 17h7M10 13.5V17"/></svg>
+          <p><b>지어내는 것이 없습니다.</b> 학교 교육과정 문서와 나이스에서 온 것만
+             그대로 보여 줍니다.</p></div>
+        <div><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <path d="M10 2.8a2.4 2.4 0 0 1 2.4 2.4v4.6a2.4 2.4 0 0 1-4.8 0V5.2A2.4 2.4 0 0 1 10 2.8Z"/>
+             <path d="M5 9.4a5 5 0 0 0 10 0M10 14.4V17.2"/></svg>
+          <p><b>마이크는 소리 크기만 잽니다.</b> 녹음하지 않고, 무슨 말인지 알아듣지 않고,
+             화면을 떠나면 놓습니다.</p></div>
+        <div><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <circle cx="10" cy="7" r="2.8"/><path d="M4.5 16.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>
+          <p><b>학생 이름은 안 넣어도 됩니다.</b> 비워 두면 번호로 돕니다.</p></div>
+      </div>
+    </section>
+
+    <section id="받기">
+      <div class="마디"><span class="번호">v0.4.0</span><h2>받기</h2></div>
+      <div class="받기판">
+        <a class="큰단추" href="https://github.com/reinhardt7177-lab/mumu-suup-doumi-release/releases/latest">내려받기 <span>81MB</span></a>
+        <p style="font-size:13.5px">
+          서명하지 않은 프로그램이라 윈도우가 파란 화면으로 한 번 막습니다.
+          <b>「추가 정보」 → 「실행」</b>을 누르면 됩니다. 개인이 만든 프로그램은 다 이렇게 뜹니다.
+        </p>
+        <div class="표싸개"><table class="파일표">
+          <thead><tr><th>FILE</th><th>쓰는 법</th></tr></thead>
+          <tbody>
+            <tr><td>MumuSuupDoumi-0.4.0-win-x64.exe</td>
+                <td>설치본. 관리자 권한이 필요 없고 바탕화면 바로가기가 생깁니다.</td></tr>
+            <tr><td>MumuSuupDoumi-0.4.0-portable.exe</td>
+                <td>설치 없이 실행. 학교 컴퓨터에 설치가 막혀 있을 때.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="묻">
+      <div class="마디"><span class="번호">FAQ</span><h2>자주 묻는 것</h2></div>
+      <details class="묻"><summary>처음 켜면 무엇부터 해야 하나요</summary>
+        <p>요정을 마우스 오른쪽 단추로 누르고 설정에서 학교를 검색해 고른 다음,
+           학년과 반을 넣습니다. 여기까지가 처음 한 번 할 일입니다.</p></details>
+      <details class="묻"><summary>나이스 인증키가 꼭 있어야 하나요</summary>
+        <p>없어도 됩니다. 다만 인증키가 없으면 하루 <b>5교시까지만</b> 옵니다 —
+           6교시 있는 날은 잘립니다. open.neis.go.kr 에서 무료로 발급받아 설정에 넣으면 풀립니다.</p></details>
+      <details class="묻"><summary>진도표는 어떻게 넣나요</summary>
+        <p>학년 교육과정 운영 계획 PDF를 고르면 「3) 교과 및 평가 운영 계획」 표에서
+           단원·차시·성취기준·수업 주안점·평가 기준을 그대로 가져옵니다.
+           학교마다 문서가 달라서 함께 담아 드리지는 못합니다.</p>
+        <p>진도표가 없어도 타이머·뽑기·모둠·점수판·터치패드·1인1역·안내판은 그대로 씁니다.</p></details>
+      <details class="묻"><summary>어떻게 끄나요</summary>
+        <p>요정을 우클릭하면 나오는 물음 아래쪽에 「무무요정 끄기」가 있습니다.
+           숨겨 두었을 때는 화면 가장자리 메뉴 줄 맨 아래에 「끄기」가 있습니다.
+           둘 다 두 번 눌러야 꺼집니다.</p></details>
+      <details class="묻"><summary>업데이트는 어떻게 하나요</summary>
+        <p>새 설치 파일을 받아 그대로 실행하면 위에 덮어씌워집니다.
+           설정·진도·메모·상담 기록은 따로 보관되어 지워지지 않습니다.
+           설치 전에 앱을 먼저 끄는 편이 안전합니다.</p></details>
+      <details class="묻"><summary>전자칠판이나 두 번째 모니터에 띄우려면</summary>
+        <p>도구판은 달력과 다른 창이라 그쪽으로 옮겨 놓을 수 있고, 한 번 옮기면 그 자리를
+           기억합니다. 탭 줄의 「전자칠판으로」를 누르면 한 번에 옮기고 화면을 채웁니다.</p></details>
+    </section>
+
+    <section id="건의">
+      <div class="마디"><span class="번호">SAY</span><h2>건의함</h2></div>
+      <p>쓰다가 불편했던 것, 있었으면 하는 것을 적어 주세요.
+        <b>선생님이 쓰는 교실</b>과 제가 쓰는 교실이 달라서, 말해 주지 않으면 모릅니다.</p>
+
+      <div class="건의판">
+        <a class="큰단추" href="GOOGLE_FORM_URL">건의하기</a>
+        <p class="곁" style="margin-top:12px">로그인 없이 바로 쓸 수 있습니다 · 익명</p>
+
+        <div class="적을것">
+          <span class="적을것머리">이것만 같이 적어 주시면 훨씬 빨리 고칩니다</span>
+          <ul>
+            <li><b>버전</b> — 설정 창 맨 위나 파일 이름에 있습니다 (예: 0.4.0)</li>
+            <li><b>무엇을 하려다</b> — "주안에서 차시를 바꾸려는데"</li>
+            <li><b>무엇이 나왔는지</b> — "아무 일도 안 일어났다", 화면에 뜬 말 그대로</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>강진중앙초등학교 · MUMU CLASS</span>
+      <span>v0.4.0 · 2026</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>
