@@ -8,7 +8,6 @@
 <meta property="og:description" content="수업 준비의 절반은 이미 어딘가에 적혀 있습니다.">
 <meta property="og:image" content="images/20-주안.jpg">
 <title>무무요정 수업도우미</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri/dist/galmuri.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Press+Start+2P&display=swap">
@@ -22,9 +21,9 @@
     --bg:        #0d0221;
     --bg-card:   rgba(20, 12, 46, .72);
     --bg-nav:    rgba(10, 3, 28, .82);
-    --text:      #f0e9ff;
-    --text2:     #b8a9e0;
-    --muted:     #8b7db8;
+    --text:      #fdfaff;
+    --text2:     #d9cff4;
+    --muted:     #aa9ed3;
     --cyan:      #00f0ff;
     --cyan2:     #00ffe7;
     --magenta:   #ff2d95;
@@ -35,22 +34,23 @@
     --border:    rgba(168, 85, 247, .30);
     --border-hi: rgba(0, 240, 255, .55);
     --radius:    3px;
-    /* 한글은 Galmuri11 — 무무클래스가 쓰는 그 픽셀 글꼴이다.
-       jsdelivr 에서 오는데, 아티팩트 미리보기는 그 주소를 막는다.
-       그래서 뒤에 나눔명조를 세워 둔다 — 픽셀이 못 오면 명조로 읽힌다.
-       둘 다 어두운 바탕에서 옛 간판 같은 결이라 갈아 끼워도 안 어색하다. */
-    --pixel: 'Galmuri11','Nanum Myeongjo','Batang',serif;
-    --mono:  'Galmuri9','Press Start 2P',ui-monospace,'Courier New',monospace;
-    --body:  'Galmuri11','Nanum Myeongjo','Batang',serif;
+    /* 한글은 나눔명조 하나로 간다. 픽셀 글꼴은 어디서 오느냐에 따라
+       보이기도 안 보이기도 해서, 읽는 사람마다 다른 글을 보게 된다.
+       명조는 어느 창에서나 같은 얼굴로 온다.
+       라벨의 Press Start 2P 만 남겨 뒀다 — 신스웨이브의 그 결은
+       한 줄짜리 표지판에서 나오지, 본문에서 나오지 않는다. */
+    --pixel: 'Nanum Myeongjo','Batang',serif;
+    --mono:  'Press Start 2P',ui-monospace,'Courier New',monospace;
+    --body:  'Nanum Myeongjo','Batang',serif;
   }
 
   * { margin:0; padding:0; box-sizing:border-box }
 
-  html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased }
+  html { scroll-behavior:smooth }
   body {
     font-family: var(--body);
     background: var(--bg); color: var(--text);
-    font-size:15px; line-height:1.85; letter-spacing:.2px;
+    font-size:16.5px; line-height:1.95; letter-spacing:.01em;
     overflow-x:hidden;
   }
 
@@ -85,8 +85,8 @@
     .교시열 { position:static; height:auto; border-right:0; border-bottom:1px solid var(--border) }
   }
   .표찰 {
-    font-family:var(--pixel); font-size:17px; font-weight:700; line-height:1.5;
-    color:var(--text); letter-spacing:0; margin-bottom:9px;
+    font-family:var(--pixel); font-size:19.5px; font-weight:700; line-height:1.55;
+    color:var(--text); letter-spacing:-.005em; margin-bottom:10px;
   }
   .상표 {
     font-family:'Press Start 2P',var(--mono); font-size:8.5px; letter-spacing:.1em;
@@ -101,7 +101,7 @@
   }
   .차림 a {
     display:grid; grid-template-columns:20px 1fr; gap:8px; align-items:baseline;
-    padding:5px 9px; border-radius:var(--radius); color:var(--text2); font-size:13.5px;
+    padding:6px 9px; border-radius:var(--radius); color:var(--text2); font-size:14.5px;
     border-left:2px solid transparent;
     transition:color .14s, background .14s, border-color .14s;
   }
@@ -114,7 +114,7 @@
   .옆받기 {
     display:block; margin-top:26px; padding:12px; border-radius:var(--radius);
     background:linear-gradient(135deg, var(--magenta), var(--purple));
-    color:#fff; text-align:center; font-family:var(--pixel); font-weight:700; font-size:12.5px;
+    color:#fff; text-align:center; font-family:var(--pixel); font-weight:700; font-size:13.5px;
     box-shadow:0 0 22px rgba(255,45,149,.34);
   }
   .옆받기:hover { color:#fff; filter:brightness(1.12) }
@@ -130,7 +130,7 @@
     padding-bottom:11px; margin-bottom:18px; border-bottom:1px solid var(--border);
   }
   .마디 h2 {
-    font-family:var(--pixel); font-size:21px; font-weight:700; letter-spacing:0;
+    font-family:var(--pixel); font-size:25px; font-weight:800; letter-spacing:-.01em;
     color:var(--text); text-wrap:balance;
   }
   .번호 {
@@ -154,7 +154,7 @@
   .첫 { padding-top:42px }
   .첫 h1 {
     font-family:var(--pixel); font-weight:700;
-    font-size:clamp(25px,3.7vw,40px); line-height:1.5; letter-spacing:0;
+    font-size:clamp(29px,4.1vw,45px); line-height:1.4; letter-spacing:-.015em;
     margin-bottom:16px; text-wrap:balance; color:var(--text);
     text-shadow:0 0 26px rgba(168,85,247,.4);
   }
@@ -165,12 +165,12 @@
     display:inline-flex; align-items:center; gap:10px;
     padding:14px 26px; border-radius:var(--radius);
     background:linear-gradient(135deg, var(--magenta), var(--purple));
-    color:#fff; font-family:var(--pixel); font-size:14px;
+    color:#fff; font-family:var(--pixel); font-weight:700; font-size:15.5px;
     box-shadow:0 0 26px rgba(255,45,149,.36);
   }
   .큰단추:hover { color:#fff; filter:brightness(1.12) }
   .큰단추 span { font-family:var(--mono); font-size:11px; opacity:.8 }
-  .곁 { font-size:12.5px; color:var(--muted) }
+  .곁 { font-size:13.5px; color:var(--muted) }
 
   /* 화면 그림 — 밝은 앱이라 어두운 바탕에서 뜬다. 네온 테두리로 앉힌다. */
   .샷 { margin:20px 0 0 }
@@ -180,7 +180,7 @@
     box-shadow:0 0 34px rgba(168,85,247,.24);
   }
   .틀칸 img { display:block; width:100%; border-radius:2px }
-  figcaption { margin-top:10px; font-size:12px; color:var(--muted) }
+  figcaption { margin-top:10px; font-size:13px; color:var(--muted) }
   .요정칸 { max-width:330px }
   .요정칸 .틀칸 { background:none; box-shadow:none; padding:0 }
 
@@ -195,7 +195,7 @@
     font-style:normal; font-family:'Press Start 2P',var(--mono);
     font-size:9px; color:var(--cyan); padding-top:6px;
   }
-  .까닭 b { display:block; font-family:var(--pixel); font-weight:700; font-size:15px;
+  .까닭 b { display:block; font-family:var(--pixel); font-weight:700; font-size:16.5px;
     margin-bottom:6px; color:var(--text) }
   .까닭 p { margin:0; font-size:14.5px }
 
@@ -235,7 +235,7 @@
   }
   .묻 summary {
     cursor:pointer; list-style:none; display:flex; gap:10px; align-items:center;
-    font-family:var(--pixel); font-weight:700; font-size:14px; color:var(--text); line-height:1.7;
+    font-family:var(--pixel); font-weight:700; font-size:16px; color:var(--text); line-height:1.7;
   }
   .묻 summary::-webkit-details-marker { display:none }
   .묻 summary::before { content:"▸"; color:var(--cyan); flex:none }
@@ -255,7 +255,7 @@
     font-size:7.5px; letter-spacing:.12em; color:var(--cyan); margin-bottom:9px;
   }
   .이음칸 b {
-    display:block; font-family:var(--pixel); font-weight:700; font-size:15px;
+    display:block; font-family:var(--pixel); font-weight:700; font-size:16.5px;
     color:var(--text); margin-bottom:7px;
   }
   .이음칸 p { margin:0; font-size:14px }
@@ -263,12 +263,12 @@
   /* ── 건의함 ──────────────────────────────────────── */
   #건의폼 { display:grid; gap:14px }
   .ㄱ줄 { display:grid; gap:6px }
-  .ㄱ줄 > span { font-size:13px; color:var(--text2) }
+  .ㄱ줄 > span { font-size:14px; color:var(--text2) }
   .ㄱ줄 > span i { font-style:normal; color:var(--muted); font-size:11.5px; margin-left:5px }
   .ㄱ둘 { display:grid; gap:14px; grid-template-columns:1.4fr 1fr }
   @media (max-width:620px) { .ㄱ둘 { grid-template-columns:minmax(0,1fr) } }
   #건의폼 textarea, #건의폼 input, #건의폼 select {
-    width:100%; font-family:var(--body); font-size:14px; line-height:1.7;
+    width:100%; font-family:var(--body); font-size:15.5px; line-height:1.75;
     color:var(--text); background:rgba(13,2,33,.6);
     border:1px solid var(--border); border-radius:var(--radius);
     padding:10px 12px; outline:none; resize:vertical;
@@ -298,7 +298,7 @@
      한 자씩 세로로 흐른다. 글은 span 하나로 묶어 둘째 칸에 온전히 넣는다. */
   .적을것 li {
     display:grid; grid-template-columns:9px minmax(0,1fr); gap:11px;
-    font-size:14.5px; color:var(--text2); line-height:1.75;
+    font-size:15.5px; color:var(--text2); line-height:1.85;
   }
   .적을것 li::before { content:"▸"; color:var(--cyan); font-size:11px; line-height:2 }
   .적을것 li > span { min-width:0 }
@@ -352,7 +352,7 @@
       <a href="#건의"><i>—</i><span>건의함</span></a>
     </div>
 
-    <a class="옆받기" href="https://github.com/reinhardt7177-lab/mumu-suup-doumi-release/releases/latest">내려받기</a>
+    <a class="옆받기" href="https://github.com/reinhardt7177-lab/mumu-desk/releases/latest">내려받기</a>
     <div class="옆판">WIN 10 · 11 · 81MB · v0.5.0</div>
   </nav>
 
@@ -364,7 +364,7 @@
         무무요정은 그것을 찾아다 오늘 자리에 놓아 줍니다. 지어내는 것은 없습니다.
       </p>
       <div class="손">
-        <a class="큰단추" href="https://github.com/reinhardt7177-lab/mumu-suup-doumi-release/releases/latest">내려받기 <span>81MB</span></a>
+        <a class="큰단추" href="https://github.com/reinhardt7177-lab/mumu-desk/releases/latest">내려받기 <span>81MB</span></a>
         <span class="곁">윈도우 10 · 11 · 무료 · 설치하면 바로</span>
       </div>
       <figure class="샷">
@@ -590,7 +590,7 @@
     <section id="받기">
       <div class="마디"><span class="번호">v0.5.0</span><h2>받기</h2></div>
       <div class="받기판">
-        <a class="큰단추" href="https://github.com/reinhardt7177-lab/mumu-suup-doumi-release/releases/latest">내려받기 <span>81MB</span></a>
+        <a class="큰단추" href="https://github.com/reinhardt7177-lab/mumu-desk/releases/latest">내려받기 <span>81MB</span></a>
         <p style="font-size:13.5px">
           서명하지 않은 프로그램이라 윈도우가 파란 화면으로 한 번 막습니다.
           <b>「추가 정보」 → 「실행」</b>을 누르면 됩니다. 개인이 만든 프로그램은 다 이렇게 뜹니다.

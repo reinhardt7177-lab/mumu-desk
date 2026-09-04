@@ -3,7 +3,7 @@
 초등 담임 선생님 바탕화면에 사는 작은 창.
 나이스 시간표와 학교 교육과정 진도표를 읽어 오늘 챙길 것을 알려 줍니다.
 
-**안내 페이지 · 내려받기** → https://reinhardt7177-lab.github.io/mumu-suup-doumi-release/
+**안내 페이지 · 내려받기** → https://reinhardt7177-lab.github.io/mumu-desk/
 
 이 저장소에는 안내 페이지와 설치 파일만 있습니다. 앱 소스는 따로 있습니다.
 
